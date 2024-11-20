@@ -1,5 +1,5 @@
 import Image from 'next/image'
-export default function Error() {
+export default function ErrorFetch() {
   return (
     <div className='text-center flex justify-center place-items-center flex-col mt-6'>
       <Image

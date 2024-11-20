@@ -3,7 +3,7 @@ import useGetProducts from '@/customHooks/useGetProducts'
 import React, { useCallback, useMemo } from 'react'
 import { Transition } from '../transitions/Transitions'
 import Loader from './Loader.module.css'
-import Error from '@/_child/Error'
+import ErrorFetch from '@/_child/ErrorFetch'
 import { motion } from 'framer-motion'
 import { Content } from './ProductsTypes.type'
 import ProductsGrid from './ProductsGrid'
@@ -53,7 +53,7 @@ const Products = () => {
           <div className='flex place-content-center'>
             {isLatest ? (
               <button
-                className='hover:bg-gradienpri text-gradienpri hover:text-white px-8 py-2 border rounded-md border-gradienpri'
+                className='hover:bg-red-400 text-black hover:text-white px-8 py-2 border rounded-md border-blue-400'
                 onClick={handleGetMoreProducts}
               >
                 MOSTRAR MÁS
@@ -69,7 +69,7 @@ const Products = () => {
           </div>
         </Transition>
       ) : (
-        <Error />
+        <ErrorFetch />
       )}
     </section>
   )

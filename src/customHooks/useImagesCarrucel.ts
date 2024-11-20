@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 export default function useImagesCarrucel(imagesUrl: string[]) {
-  const [currentImagesIndex, setCurrentImageIndex] = useState<number>(0)
+  const [currentImagesIndex, setCurrentImagesIndex] = useState<number>(0)
   const DEFAULT_IMAGE_URL = '/assets/backgroundNoImage.webp'
   const [isTransitionImg, setIsTransitionImg] = useState<boolean>(false)
   useEffect(() => {
@@ -9,7 +9,7 @@ export default function useImagesCarrucel(imagesUrl: string[]) {
     const interval = setInterval(() => {
       setIsTransitionImg(true)
       setTimeout(() => {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % imagesUrl.length)
+        setCurrentImagesIndex((prevIndex) => (prevIndex + 1) % imagesUrl.length)
         setIsTransitionImg(false)
       }, 700)
     }, 15000)
