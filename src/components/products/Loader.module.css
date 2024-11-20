@@ -1,0 +1,54 @@
+.loader-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 1000;
+    transition: opacity 0.3s;
+  }
+
+  .loader {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #87bf4e;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+  .loaderSideBar {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #87bf4e;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+  }
+  .loaderMainMenu {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #87bf4e;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    animation: spin 1s linear infinite;
+  }
+
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .visible {
+    opacity: 1;
+    pointer-events: auto;
+  }

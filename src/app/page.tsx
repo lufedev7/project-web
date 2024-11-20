@@ -1,13 +1,11 @@
-import Link from 'next/link'
 import Banner from '../components/banner/Banner'
+import Products from '@/components/products/Products'
 
 export default function Home() {
   return (
     <main className=''>
       <Banner />
-      <Link href={'/aws'}>
-        <span className='bg-red-300'>AWS</span>
-      </Link>
+      <Products />
     </main>
   )
 }
