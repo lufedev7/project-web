@@ -1,0 +1,19 @@
+@tailwind components;
+@layer components {
+
+    .Imput {
+        @apply
+        absolute
+        inset-0
+        rounded-full
+        pl-11
+         border-NormalBlue
+         focus:shadow-lg
+          focus:bg-white
+           bg-[#f5f7fa]
+            focus:outline-none
+         focus:border-NormalBlueHover
+
+    }
+
+}
