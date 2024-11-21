@@ -4,6 +4,7 @@ import { useEffect, useReducer, useRef } from 'react'
 export default function useGetProducts() {
   const [state, dispatch] = useReducer(reducer, initialState)
   const fetchRef = useRef(false)
+
   useEffect(() => {
     if (!fetchRef.current) {
       fetchRef.current = true
@@ -20,7 +21,7 @@ export default function useGetProducts() {
       process.env.NEXT_PUBLIC_URL_PRODUCTS +
       'pageNo=' +
       state.count.toString() +
-      '&pageSize=10&sortBy=productId'
+      '&pageSize=12&sortBy=productId'
     try {
       const res = await fetch(url)
       if (res.status >= 400) {

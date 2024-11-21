@@ -3,9 +3,7 @@ import { Content } from './ProductsTypes.type'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FormatPrice } from '@/utils/FormatPrices'
-import { LuPalmtree } from 'react-icons/lu'
-import { TbBrandHipchat } from 'react-icons/tb'
-import { LiaStarSolid } from 'react-icons/lia'
+
 import useImagesCarrucel from '@/customHooks/useImagesCarrucel'
 import { IoPricetagSharp } from 'react-icons/io5'
 interface ProductsGridProps {
@@ -17,16 +15,13 @@ const ProductsGrid = React.memo((props: ProductsGridProps): JSX.Element => {
     imageUrls,
     productId,
     productName,
-    categoryId,
     productDescription,
     isNew,
-    userId,
     originalPrice,
     salePrice,
-    isSold,
     stockQuantity,
   } = props.products
-  console.log(stockQuantity)
+
   const { currentImagesIndex, currentImageUrl, isTransitionImg } =
     useImagesCarrucel(imageUrls)
   return (
@@ -64,14 +59,16 @@ const ProductsGrid = React.memo((props: ProductsGridProps): JSX.Element => {
                 <span>{stockQuantity}</span>
                 <span>disponibles</span>
               </div>
-              <div className='font-semibold flex px-2'>
-                <span className='pr-8'>Precio nuevo</span>
+              <div className='font-semibold flex px-2 place-items-center'>
+                <IoPricetagSharp />
+                <span className='pl-2 pr-8'>Precio nuevo</span>
                 <span className='text-red-500 line-through'>
                   {FormatPrice(Number(originalPrice))}
                 </span>
               </div>
-              <div className='font-semibold flex bg-LightBlueActive px-2 py-2 rounded-lg'>
-                <span className='pr-3'>Precio de venta</span>
+              <div className='font-semibold flex place-items-center bg-LightBlueActive px-2 py-2 rounded-lg'>
+                <IoPricetagSharp />
+                <span className='pl-2 pr-3'>Precio de venta</span>
                 <span className='text-green-700'>
                   {FormatPrice(Number(salePrice))}
                 </span>

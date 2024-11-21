@@ -1,4 +1,5 @@
 'use client'
+import { Content } from '@/components/products/ProductsTypes.type'
 import {
   type ReactNode,
   createContext,
@@ -16,26 +17,40 @@ interface ContextProps {
   setOpenMenuMobile: Dispatch<SetStateAction<boolean>>
   openMenuLogin: boolean
   setOpenMenuLogin: Dispatch<SetStateAction<boolean>>
+  titleCategorias: string
+  setTitleCategorias: Dispatch<SetStateAction<string>>
+  dataProducts: Content[]
+  setProducts: Dispatch<SetStateAction<Content[]>>
 }
 const GlobalContext = createContext<ContextProps>({
   openMenuMobile: false,
   setOpenMenuMobile: () => {},
   openMenuLogin: false,
   setOpenMenuLogin: () => {},
+  titleCategorias: 'Todos los productos',
+  setTitleCategorias: () => {},
+  dataProducts: [],
+  setProducts: () => {},
 })
 export const GlobalContextProvider = ({
   children,
 }: GlobalContextProviderProps) => {
   const [openMenuMobile, setOpenMenuMobile] = useState(false)
   const [openMenuLogin, setOpenMenuLogin] = useState(false)
+  const [titleCategorias, setTitleCategorias] = useState('Todos los productos')
+  const [dataProducts, setProducts] = useState<Content[]>([])
   const contextValue = useMemo(
     () => ({
       openMenuMobile,
       setOpenMenuMobile,
       openMenuLogin,
       setOpenMenuLogin,
+      titleCategorias,
+      setTitleCategorias,
+      dataProducts,
+      setProducts,
     }),
-    [openMenuMobile, openMenuLogin],
+    [openMenuMobile, openMenuLogin, titleCategorias, dataProducts],
   )
   return (
     <GlobalContext.Provider value={contextValue}>

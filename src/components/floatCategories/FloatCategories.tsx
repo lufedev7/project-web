@@ -2,7 +2,9 @@ import React, { useMemo } from 'react'
 import { Transition } from '../transitions/Transitions'
 import { type FloatCategoriesProps } from './CategoriesTypes.type'
 import Image from 'next/image'
+import { useGlobalContext } from '@/app/context/OpenMenuMobileContext'
 
+import { ProductsForCategories } from '../../services/ProductsForCategories'
 export default function FloatCategories({ categories }: FloatCategoriesProps) {
   const randomCategories = useMemo(() => {
     const defaultCategory = { categoryName: '', categoryDescription: '' }
@@ -10,10 +12,33 @@ export default function FloatCategories({ categories }: FloatCategoriesProps) {
     return Array.from({ length: 4 }, (_, i) => shuffled[i] || defaultCategory)
   }, [categories])
 
+  const { setTitleCategorias, setProducts } = useGlobalContext()
+  const handleGetTitleCategories = async (
+    props: string,
+    idCategory: number,
+  ) => {
+    try {
+      const data = await ProductsForCategories(idCategory)
+      setTitleCategorias(props)
+      setProducts(data.data.content)
+      console.log(data.data.content)
+    } catch (error) {
+      console.error('Error al obtener la data', error)
+    }
+  }
+
   return (
     <Transition className='absolute hidden md:inline bottom-10 md:-bottom-20 left-0 right-0 md:w-[90%] xl:w-[65%] mx-auto'>
       <div className='flex-col justify-between gap-4 py-4  rounded-md md:flex md:flex-row  px-4'>
-        <div className='flex flex-col items-center bg-white p-4 transition-all hover:bg-LightBlueHover cursor-pointer rounded-lg shadow-md w-full md:w-64 h-30'>
+        <button
+          className='flex flex-col items-center bg-white p-4 transition-all hover:bg-LightBlueHover cursor-pointer rounded-lg shadow-md w-full md:w-64 h-30'
+          onClick={() =>
+            handleGetTitleCategories(
+              randomCategories[0]?.categoryName,
+              randomCategories[0].productCategoryId,
+            )
+          }
+        >
           <div className='w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2'>
             {randomCategories[0]?.categoryImage ? (
               <Image
@@ -42,9 +67,17 @@ export default function FloatCategories({ categories }: FloatCategoriesProps) {
           <p className='text-sm text-gray-500'>
             {randomCategories[0]?.categoryDescription}
           </p>
-        </div>
+        </button>
 
-        <div className='flex flex-col items-center bg-white p-4 transition-all hover:bg-LightBlueHover cursor-pointer rounded-lg shadow-md w-full md:w-64 h-40'>
+        <button
+          className='flex flex-col items-center bg-white p-4 transition-all hover:bg-LightBlueHover cursor-pointer rounded-lg shadow-md w-full md:w-64 h-40'
+          onClick={() =>
+            handleGetTitleCategories(
+              randomCategories[1]?.categoryName,
+              randomCategories[1].productCategoryId,
+            )
+          }
+        >
           <div className='w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2'>
             {randomCategories[1]?.categoryImage ? (
               <Image
@@ -73,9 +106,17 @@ export default function FloatCategories({ categories }: FloatCategoriesProps) {
           <p className='text-sm text-gray-500'>
             {randomCategories[1]?.categoryDescription}
           </p>
-        </div>
+        </button>
 
-        <div className='flex flex-col items-center bg-white p-4 transition-all hover:bg-LightBlueHover cursor-pointer rounded-lg shadow-md w-full md:w-64 h-40'>
+        <button
+          className='flex flex-col items-center bg-white p-4 transition-all hover:bg-LightBlueHover cursor-pointer rounded-lg shadow-md w-full md:w-64 h-40'
+          onClick={() =>
+            handleGetTitleCategories(
+              randomCategories[2]?.categoryName,
+              randomCategories[2].productCategoryId,
+            )
+          }
+        >
           <div className='w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-2'>
             {randomCategories[2]?.categoryImage ? (
               <Image
@@ -104,9 +145,17 @@ export default function FloatCategories({ categories }: FloatCategoriesProps) {
           <p className='text-sm text-gray-500'>
             {randomCategories[2]?.categoryDescription}
           </p>
-        </div>
+        </button>
 
-        <div className='flex flex-col items-center bg-white p-4 transition-all hover:bg-LightBlueHover cursor-pointer rounded-lg shadow-md w-full md:w-64 h-40'>
+        <button
+          className='flex flex-col items-center bg-white p-4 transition-all hover:bg-LightBlueHover cursor-pointer rounded-lg shadow-md w-full md:w-64 h-40'
+          onClick={() =>
+            handleGetTitleCategories(
+              randomCategories[3]?.categoryName,
+              randomCategories[3].productCategoryId,
+            )
+          }
+        >
           <div className='w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-2'>
             {randomCategories[3]?.categoryImage ? (
               <Image
@@ -135,7 +184,7 @@ export default function FloatCategories({ categories }: FloatCategoriesProps) {
           <p className='text-sm text-gray-500'>
             {randomCategories[3]?.categoryDescription}
           </p>
-        </div>
+        </button>
       </div>
     </Transition>
   )
