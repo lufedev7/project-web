@@ -17,6 +17,8 @@ interface ContextProps {
   setOpenMenuMobile: Dispatch<SetStateAction<boolean>>
   openMenuLogin: boolean
   setOpenMenuLogin: Dispatch<SetStateAction<boolean>>
+  loginSucces: boolean
+  setLoginSucces: Dispatch<SetStateAction<boolean>>
   titleCategorias: string
   setTitleCategorias: Dispatch<SetStateAction<string>>
   dataProducts: Content[]
@@ -27,6 +29,8 @@ const GlobalContext = createContext<ContextProps>({
   setOpenMenuMobile: () => {},
   openMenuLogin: false,
   setOpenMenuLogin: () => {},
+  loginSucces: false,
+  setLoginSucces: () => {},
   titleCategorias: 'Todos los productos',
   setTitleCategorias: () => {},
   dataProducts: [],
@@ -37,6 +41,7 @@ export const GlobalContextProvider = ({
 }: GlobalContextProviderProps) => {
   const [openMenuMobile, setOpenMenuMobile] = useState(false)
   const [openMenuLogin, setOpenMenuLogin] = useState(false)
+  const [loginSucces, setLoginSucces] = useState(false)
   const [titleCategorias, setTitleCategorias] = useState('Todos los productos')
   const [dataProducts, setProducts] = useState<Content[]>([])
   const contextValue = useMemo(
@@ -45,12 +50,14 @@ export const GlobalContextProvider = ({
       setOpenMenuMobile,
       openMenuLogin,
       setOpenMenuLogin,
+      loginSucces,
+      setLoginSucces,
       titleCategorias,
       setTitleCategorias,
       dataProducts,
       setProducts,
     }),
-    [openMenuMobile, openMenuLogin, titleCategorias, dataProducts],
+    [openMenuMobile, openMenuLogin, titleCategorias, dataProducts, loginSucces],
   )
   return (
     <GlobalContext.Provider value={contextValue}>

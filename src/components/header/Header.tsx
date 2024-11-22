@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { CiMenuFries } from 'react-icons/ci'
 import { FiUser } from 'react-icons/fi'
 import Navbar from '../navbar/Navbar'
@@ -10,8 +10,20 @@ import LoginModal from './LoginModal'
 import { FloatCategoriesProps } from '../floatCategories/CategoriesTypes.type'
 
 export default function Header({ categories }: FloatCategoriesProps) {
-  const { openMenuMobile, setOpenMenuMobile, openMenuLogin, setOpenMenuLogin } =
-    useGlobalContext()
+  const {
+    openMenuMobile,
+    setOpenMenuMobile,
+    setOpenMenuLogin,
+    openMenuLogin,
+    loginSucces,
+  } = useGlobalContext()
+  const [nameUser, setNameUser] = useState<string>('')
+  useEffect(() => {
+    const storedNameUser = localStorage.getItem('nameUser')
+    if (storedNameUser) {
+      setNameUser(storedNameUser)
+    }
+  }, [])
   return (
     <div className='container mx-auto my-4 bg-NormalBlue rounded-full '>
       <div className='flex items-center justify-between px-5 md:px-4'>
@@ -31,6 +43,13 @@ export default function Header({ categories }: FloatCategoriesProps) {
           }}
         />
         <Navbar categories={categories} />
+        {loginSucces && (
+          <div className='text-white'>
+            <span className='pr-2'>Hola,</span>
+            <span>{nameUser}</span>
+          </div>
+        )}
+
         <div className=''>
           <FiUser
             className='text-white h-8 w-6 mr-6 cursor-pointer'

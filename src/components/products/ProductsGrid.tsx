@@ -6,6 +6,7 @@ import { FormatPrice } from '@/utils/FormatPrices'
 
 import useImagesCarrucel from '@/customHooks/useImagesCarrucel'
 import { IoPricetagSharp } from 'react-icons/io5'
+
 interface ProductsGridProps {
   products: Content
   customKey: number
@@ -54,10 +55,16 @@ const ProductsGrid = React.memo((props: ProductsGridProps): JSX.Element => {
             />
             <div className='px- py-5'>
               <p className='text-secundary px-2'>{productName}</p>
-              <p className='text-secondar px-2'>{productDescription}</p>
-              <div className=''>
-                <span>{stockQuantity}</span>
-                <span>disponibles</span>
+              <p className='text-secondary px-2'>{productDescription}</p>
+              <div className='px-2'>
+                {stockQuantity !== null ? (
+                  <div>
+                    <span className='pr-2'>{stockQuantity}</span>
+                    <span>disponibles</span>
+                  </div>
+                ) : (
+                  <span>Sin unidades</span>
+                )}
               </div>
               <div className='font-semibold flex px-2 place-items-center'>
                 <IoPricetagSharp />
