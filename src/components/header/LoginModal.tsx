@@ -23,7 +23,7 @@ export default function LoginModal() {
           <Link href='/login' className='hover:border-b-[1px]'>
             Ingresar
           </Link>
-          <Link href='/' className='hover:border-b-[1px]'>
+          <Link href='/register' className='hover:border-b-[1px]'>
             Registrar
           </Link>
         </>

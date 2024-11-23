@@ -118,9 +118,9 @@ export default function LoginForm() {
         </form>
         <p className='text-center text-sm text-gray-600 mt-4'>
           ¿No tienes una cuenta?
-          <a href='#' className='text-NormalBlue hover:underline'>
+          <Link href='/register' className='text-NormalBlue hover:underline'>
             Registrate
-          </a>
+          </Link>
         </p>
       </div>
     </div>
