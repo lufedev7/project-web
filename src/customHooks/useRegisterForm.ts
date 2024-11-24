@@ -1,6 +1,6 @@
 import { useState } from 'react'
+import { useAuth } from './useAuth'
 
-// Types
 interface UserData {
   userName: string
   email: string
@@ -30,7 +30,6 @@ interface UseRegisterFormReturn {
   validatePasswords: () => boolean
 }
 
-// Constants
 const INITIAL_USER_DATA: UserData = {
   userName: '',
   email: '',
@@ -41,14 +40,14 @@ const INITIAL_USER_DATA: UserData = {
 }
 
 export const useRegisterForm = (): UseRegisterFormReturn => {
-  // State
   const [userData, setUserData] = useState<UserData>(INITIAL_USER_DATA)
   const [imagePreview, setImagePreview] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
   const [authError, setAuthError] = useState<string | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)
 
-  // Utilities
+  const { login } = useAuth()
+
   const validatePasswords = (): boolean => {
     const isValid = userData.password === userData.confirmPassword
     setPasswordError(isValid ? null : 'Las contraseñas no coinciden')
@@ -91,16 +90,29 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
     if (!response.ok) {
       throw new Error(data.message || 'Error en el registro')
     }
+    return data
+  }
+  const handleAutoLogin = async () => {
+    try {
+      await login({
+        usernameOrEmail: userData.userName,
+        password: userData.password,
+      })
+      // Si el login es exitoso, redirigir al usuario
+      //router.push('/dashboard') // O la ruta que corresponda después del login
+    } catch (error) {
+      console.error('Error en el auto-login:', error)
+      // Si falla el auto-login, redirigir al login manual
+      //router.push('/login')
+    }
   }
 
-  // Handlers
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
     setUserData((prev) => ({ ...prev, userImage: file }))
 
-    // Preview image
     const reader = new FileReader()
     reader.onloadend = () => {
       setImagePreview(reader.result as string)
@@ -116,13 +128,11 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
     setAuthError(null)
 
     try {
-      // 1. Upload image first if exists
       let imageUrl = ''
       if (userData.userImage) {
         imageUrl = await uploadImageToS3(userData.userImage)
       }
 
-      // 2. Register user with image URL
       const userDataToSend: UserDataFetch = {
         userName: userData.userName,
         email: userData.email,
@@ -132,8 +142,8 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
       }
 
       await registerUser(userDataToSend)
+      await handleAutoLogin()
 
-      // Reset form on success
       setUserData(INITIAL_USER_DATA)
       setImagePreview('')
     } catch (error) {

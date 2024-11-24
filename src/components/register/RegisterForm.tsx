@@ -95,7 +95,7 @@ export default function RegisterForm() {
             value={userData.confirmPassword}
             onChange={handleConfirmPasswordChange}
             disabled={isLoading}
-            error={passwordError}
+            error={passwordError ? passwordError : undefined}
           />
 
           <InputField
