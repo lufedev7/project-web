@@ -98,12 +98,8 @@ export const useRegisterForm = (): UseRegisterFormReturn => {
         usernameOrEmail: userData.userName,
         password: userData.password,
       })
-      // Si el login es exitoso, redirigir al usuario
-      //router.push('/dashboard') // O la ruta que corresponda después del login
     } catch (error) {
       console.error('Error en el auto-login:', error)
-      // Si falla el auto-login, redirigir al login manual
-      //router.push('/login')
     }
   }
 

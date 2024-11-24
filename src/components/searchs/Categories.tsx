@@ -4,12 +4,25 @@ import { BiCategory } from 'react-icons/bi'
 import { GrFormDown, GrFormUp } from 'react-icons/gr'
 import { FloatCategoriesProps } from '../floatCategories/CategoriesTypes.type'
 import { useGlobalContext } from '@/app/context/OpenMenuMobileContext'
+import { ProductsForCategories } from '@/services/ProductsForCategories'
 
 export default function Categories({ categories }: FloatCategoriesProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const { setTitleCategorias } = useGlobalContext()
-  const handleGetTitleCategories = (props: string) => {
-    setTitleCategorias(props)
+  const { setTitleCategorias, setProducts, setIsLatestFlag } =
+    useGlobalContext()
+  const handleGetTitleCategories = async (
+    props: string,
+    idCategory: number,
+  ) => {
+    try {
+      const data = await ProductsForCategories(idCategory)
+      setTitleCategorias(props)
+      setProducts(data.data.content)
+      setIsLatestFlag(false)
+      console.log(data.data.content)
+    } catch (error) {
+      console.error('Error al obtener la data', error)
+    }
   }
   return (
     <div
@@ -36,7 +49,9 @@ export default function Categories({ categories }: FloatCategoriesProps) {
             <button
               key={productCategoryId}
               className='hover:border-b-[1px]'
-              onClick={() => handleGetTitleCategories(categoryName)}
+              onClick={() =>
+                handleGetTitleCategories(categoryName, productCategoryId)
+              }
             >
               {categoryName}
             </button>

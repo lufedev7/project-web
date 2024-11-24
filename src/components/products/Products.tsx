@@ -13,13 +13,23 @@ import { useGlobalContext } from '@/app/context/OpenMenuMobileContext'
 const Products = () => {
   const { getMoreFetching, response, isLatest, batRequest, loader } =
     useGetProducts()
-  const { dataProducts, setProducts } = useGlobalContext()
+  const {
+    dataProducts,
+    setProducts,
+    isLatestGlobal,
+    setIsLatestGlobal,
+    isLatestFlag,
+  } = useGlobalContext()
   const { titleCategorias } = useGlobalContext()
   useEffect(() => {
-    if (response) {
+    if (response && isLatestFlag) {
       setProducts(response)
+      setIsLatestGlobal(isLatest)
     }
-  }, [response, setProducts])
+    if (!isLatestFlag) {
+      setIsLatestGlobal(true)
+    }
+  }, [isLatest, isLatestFlag, response, setIsLatestGlobal, setProducts])
   const ProductList = useMemo(
     () =>
       dataProducts?.map((product: Content) => (
@@ -51,7 +61,7 @@ const Products = () => {
             dataLength={response.length + 12}
             next={getMoreFetching}
             key={'non-unique'}
-            hasMore={!isLatest}
+            hasMore={!isLatestGlobal}
             loader={
               <div className='flex place-items-center justify-center'>
                 <h1>loading</h1>

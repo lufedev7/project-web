@@ -23,6 +23,10 @@ interface ContextProps {
   setTitleCategorias: Dispatch<SetStateAction<string>>
   dataProducts: Content[]
   setProducts: Dispatch<SetStateAction<Content[]>>
+  isLatestGlobal: boolean
+  setIsLatestGlobal: Dispatch<SetStateAction<boolean>>
+  isLatestFlag: boolean
+  setIsLatestFlag: Dispatch<SetStateAction<boolean>>
 }
 const GlobalContext = createContext<ContextProps>({
   openMenuMobile: false,
@@ -35,6 +39,10 @@ const GlobalContext = createContext<ContextProps>({
   setTitleCategorias: () => {},
   dataProducts: [],
   setProducts: () => {},
+  isLatestGlobal: false,
+  setIsLatestGlobal: () => {},
+  isLatestFlag: false,
+  setIsLatestFlag: () => {},
 })
 export const GlobalContextProvider = ({
   children,
@@ -44,6 +52,8 @@ export const GlobalContextProvider = ({
   const [loginSucces, setLoginSucces] = useState(false)
   const [titleCategorias, setTitleCategorias] = useState('Todos los productos')
   const [dataProducts, setProducts] = useState<Content[]>([])
+  const [isLatestGlobal, setIsLatestGlobal] = useState(true)
+  const [isLatestFlag, setIsLatestFlag] = useState(true)
   const contextValue = useMemo(
     () => ({
       openMenuMobile,
@@ -56,8 +66,20 @@ export const GlobalContextProvider = ({
       setTitleCategorias,
       dataProducts,
       setProducts,
+      isLatestGlobal,
+      setIsLatestGlobal,
+      isLatestFlag,
+      setIsLatestFlag,
     }),
-    [openMenuMobile, openMenuLogin, titleCategorias, dataProducts, loginSucces],
+    [
+      openMenuMobile,
+      openMenuLogin,
+      titleCategorias,
+      dataProducts,
+      loginSucces,
+      isLatestGlobal,
+      isLatestFlag,
+    ],
   )
   return (
     <GlobalContext.Provider value={contextValue}>

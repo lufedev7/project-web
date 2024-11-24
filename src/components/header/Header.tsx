@@ -1,13 +1,15 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { CiMenuFries } from 'react-icons/ci'
 import { FiUser } from 'react-icons/fi'
 import Navbar from '../navbar/Navbar'
 import { useGlobalContext } from '@/app/context/OpenMenuMobileContext'
 import LoginModal from './LoginModal'
 import { FloatCategoriesProps } from '../floatCategories/CategoriesTypes.type'
+
+import { usePathname } from 'next/navigation'
 
 export default function Header({ categories }: FloatCategoriesProps) {
   const {
@@ -17,6 +19,7 @@ export default function Header({ categories }: FloatCategoriesProps) {
     openMenuLogin,
     loginSucces,
   } = useGlobalContext()
+  const pathname = usePathname()
   const [nameUser, setNameUser] = useState<string>('')
   useEffect(() => {
     const storedNameUser = localStorage.getItem('nameUser')
@@ -24,10 +27,19 @@ export default function Header({ categories }: FloatCategoriesProps) {
       setNameUser(storedNameUser)
     }
   }, [])
+  const handleLogoClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+      if (pathname === '/') {
+        e.preventDefault()
+        window.location.reload()
+      }
+    },
+    [pathname],
+  )
   return (
     <div className='container mx-auto my-4 bg-NormalBlue rounded-full '>
       <div className='flex items-center justify-between px-5 md:px-4'>
-        <Link href='/'>
+        <Link href='/' onClick={handleLogoClick}>
           <Image
             src='/assets/logo.png'
             alt='Logo'

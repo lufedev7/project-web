@@ -12,7 +12,8 @@ export default function FloatCategories({ categories }: FloatCategoriesProps) {
     return Array.from({ length: 4 }, (_, i) => shuffled[i] || defaultCategory)
   }, [categories])
 
-  const { setTitleCategorias, setProducts } = useGlobalContext()
+  const { setTitleCategorias, setProducts, setIsLatestFlag } =
+    useGlobalContext()
   const handleGetTitleCategories = async (
     props: string,
     idCategory: number,
@@ -21,6 +22,7 @@ export default function FloatCategories({ categories }: FloatCategoriesProps) {
       const data = await ProductsForCategories(idCategory)
       setTitleCategorias(props)
       setProducts(data.data.content)
+      setIsLatestFlag(false)
       console.log(data.data.content)
     } catch (error) {
       console.error('Error al obtener la data', error)
