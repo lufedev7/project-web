@@ -32,7 +32,7 @@ export default function LoginModal() {
           <button onClick={logout} className='hover:border-b-[1px]'>
             Salir
           </button>
-          <Link href='/' className='hover:border-b-[1px]'>
+          <Link href='/profile' className='hover:border-b-[1px]'>
             Mi perfil
           </Link>
         </>
