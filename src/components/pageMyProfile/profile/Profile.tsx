@@ -9,8 +9,8 @@ import { AddProductForm } from '../addProductForm/AddProductForm'
 import { Button } from '../ui/Button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 import useFetchProfile from '@/customHooks/useFetchsProfile'
+import Image from 'next/image'
 
-// Simulamos la obtención de datos del servidor
 const initialUserData = {
   id: 15,
   userName: 'Isabella Anderson',
@@ -37,26 +37,6 @@ const initialProducts = [
     ],
     stockQuantity: 1,
   },
-  // Aquí puedes agregar más productos...
-]
-
-const initialPurchasedProducts = [
-  {
-    productId: 15,
-    productName: 'PlayStation 5',
-    categoryId: 1,
-    productDescription: 'Consola de videojuegos de última generación',
-    isNew: false,
-    userId: 10,
-    originalPrice: 12000,
-    salePrice: 11500,
-    isSold: true,
-    imageUrls: [
-      'https://aplication-web-storage.s3.us-east-2.amazonaws.com/1366_2000.jpg-1732422954076',
-    ],
-    stockQuantity: null,
-  },
-  // Aquí puedes agregar más productos comprados...
 ]
 
 const initialSoldProducts = [
@@ -70,27 +50,68 @@ const initialSoldProducts = [
       'https://aplication-web-storage.s3.us-east-2.amazonaws.com/1366_2000.jpg-1732422954076',
     buyerName: 'John Doe',
   },
-  // Aquí puedes agregar más productos vendidos...
 ]
 
+export interface SellerTypes {
+  id: number
+  buyerId: number
+  productId: number
+  imageUrls: string[]
+  productName: string
+  userName: string
+  salePrice: number
+  transactionDate: Date
+  status: string
+  paymentMethod: string
+}
+export interface BuyerTypes {
+  id: number
+  buyerId: number
+  productId: number
+  imageUrls: string[]
+  productName: string
+  userName: string
+  salePrice: number
+  transactionDate: Date
+  status: string
+  paymentMethod: string
+}
+
 export default function Profile() {
-  const { dataFetch, error, isLoading, refetch } = useFetchProfile()
-  console.log(dataFetch)
+  const {
+    dataFetch,
+    error,
+    isLoading,
+    refetch,
+    dataProductUser,
+    dataTransactions,
+    updateUser,
+  } = useFetchProfile()
   const [userData, setUserData] = useState(initialUserData)
   const [products, setProducts] = useState(initialProducts)
-  const [purchasedProducts, setPurchasedProducts] = useState(
-    initialPurchasedProducts,
-  )
+
   const [soldProducts, setSoldProducts] = useState(initialSoldProducts)
   const [isEditingUser, setIsEditingUser] = useState(false)
   const [isAddingProduct, setIsAddingProduct] = useState(false)
 
-  const handleEditUser = (newUserData) => {
+  const handleEditUser = (newUserData: typeof userData) => {
     setUserData({ ...userData, ...newUserData })
     setIsEditingUser(false)
+    if (dataFetch?.id) {
+      updateUser(dataFetch.id, newUserData)
+    }
+    console.log(dataFetch?.id)
+    console.log(newUserData)
   }
 
-  const handleAddProduct = (newProduct) => {
+  const handleAddProduct = (newProduct: {
+    imageUrl: string
+    productName: string
+    productDescription: string
+    originalPrice: number
+    salePrice: number
+    categoryId: number
+  }) => {
     const productToAdd = {
       ...newProduct,
       productId: products.length + 1,
@@ -103,64 +124,324 @@ export default function Profile() {
     setProducts([...products, productToAdd])
     setIsAddingProduct(false)
   }
-  return (
-    <div className='container mx-auto px-4 py-8'>
-      {isEditingUser ? (
-        <EditUserForm
-          {...userData}
-          onSave={handleEditUser}
-          onCancel={() => setIsEditingUser(false)}
-        />
-      ) : (
-        <UserInfo {...dataFetch} onEdit={() => setIsEditingUser(true)} />
-      )}
 
-      {userData.seller && (
-        <Tabs defaultValue='selling' className='mt-8'>
-          <TabsList className='w-full justify-start overflow-x-auto'>
-            <TabsTrigger value='selling'>En venta</TabsTrigger>
-            <TabsTrigger value='sold'>Vendidos</TabsTrigger>
-          </TabsList>
-          <TabsContent value='selling'>
-            <h2 className='text-xl sm:text-2xl font-bold mb-4'>
-              Productos en venta
-            </h2>
-            {isAddingProduct ? (
-              <AddProductForm
-                onSave={handleAddProduct}
-                onCancel={() => setIsAddingProduct(false)}
+  if (isLoading) {
+    return (
+      <div className='flex items-center justify-center min-h-screen'>
+        <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#197fe6]'></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className='flex items-center justify-center min-h-screen'>
+        <div className='bg-red-50 text-red-600 p-4 rounded-lg'>
+          Error al cargar el perfil. Por favor, intenta nuevamente.
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className='min-h-screen bg-[#f8fafc]'>
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
+        <div className='space-y-8'>
+          <section className='transition-all duration-300'>
+            {isEditingUser ? (
+              <EditUserForm
+                {...userData}
+                onSave={handleEditUser}
+                onCancel={() => setIsEditingUser(false)}
               />
             ) : (
-              <Button onClick={() => setIsAddingProduct(true)} className='mb-4'>
-                Agregar nuevo producto
-              </Button>
+              <UserInfo {...dataFetch} onEdit={() => setIsEditingUser(true)} />
             )}
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8'>
-              {products.map((product) => (
-                <ProductCard key={product.productId} {...product} />
-              ))}
-            </div>
-          </TabsContent>
-          <TabsContent value='sold'>
-            <h2 className='text-xl sm:text-2xl font-bold mb-4'>
-              Productos vendidos
-            </h2>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8'>
-              {soldProducts.map((product) => (
-                <SoldProductCard key={product.productId} {...product} />
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
-      )}
+          </section>
 
-      <h2 className='text-xl sm:text-2xl font-bold mb-4'>
-        Productos comprados
-      </h2>
-      <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'>
-        {purchasedProducts.map((product) => (
-          <ProductCard key={product.productId} {...product} />
-        ))}
+          {userData.seller && (
+            <section className='bg-white rounded-lg shadow-sm border border-[#e8f2fd] p-6'>
+              <Tabs defaultValue='selling' className='space-y-6'>
+                <TabsList className='flex space-x-2 border-b border-[#e8f2fd] overflow-x-auto'>
+                  <TabsTrigger
+                    value='selling'
+                    className='px-4 py-2 text-[#595959] hover:text-[#197fe6] data-[state=active]:text-[#197fe6] data-[state=active]:border-b-2 data-[state=active]:border-[#197fe6]'
+                  >
+                    Mis productos
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value='sold'
+                    className='px-4 py-2 text-[#595959] hover:text-[#197fe6] data-[state=active]:text-[#197fe6] data-[state=active]:border-b-2 data-[state=active]:border-[#197fe6]'
+                  >
+                    Vendidos
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value='selling' className='space-y-6'>
+                  <div className='flex items-center justify-between'>
+                    <h2 className='text-2xl font-bold text-[#092c51]'>
+                      Mis productos
+                    </h2>
+                    {!isAddingProduct && (
+                      <Button
+                        onClick={() => setIsAddingProduct(true)}
+                        className='bg-[#197fe6] hover:bg-[#1772cf] active:bg-[#1466b8] text-white px-6 py-2 rounded-lg transition-colors duration-200'
+                      >
+                        <svg
+                          className='w-5 h-5 mr-2 inline-block'
+                          fill='none'
+                          stroke='currentColor'
+                          viewBox='0 0 24 24'
+                        >
+                          <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeWidth={2}
+                            d='M12 6v6m0 0v6m0-6h6m-6 0H6'
+                          />
+                        </svg>
+                        Agregar producto
+                      </Button>
+                    )}
+                  </div>
+
+                  {isAddingProduct ? (
+                    <AddProductForm
+                      onSave={handleAddProduct}
+                      onCancel={() => setIsAddingProduct(false)}
+                    />
+                  ) : (
+                    <>
+                      {!dataProductUser ||
+                      !dataProductUser.data ||
+                      !dataProductUser.data.content ? (
+                        <div className='flex flex-col items-center justify-center p-8 text-[#595959]'>
+                          <p className='text-lg mb-4'>
+                            No hay productos disponibles
+                          </p>
+                        </div>
+                      ) : dataProductUser.data.content.length === 0 ? (
+                        <div className='flex flex-col items-center justify-center p-8 text-[#595959]'>
+                          <p className='text-lg mb-4'>
+                            Aún no tienes productos publicados
+                          </p>
+                          <p>¡Comienza agregando tu primer producto!</p>
+                        </div>
+                      ) : (
+                        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6'>
+                          {dataProductUser.data.content.map((product) => (
+                            <div
+                              key={product.productId}
+                              className='bg-white rounded-lg shadow-sm border border-[#e8f2fd] hover:shadow-md transition-shadow duration-200'
+                            >
+                              <div className='relative aspect-square overflow-hidden rounded-t-lg'>
+                                <Image
+                                  src={product.imageUrls[0]}
+                                  alt={product.productName}
+                                  width={150}
+                                  height={150}
+                                  className='object-cover w-full h-full'
+                                />
+                                {product.isNew && (
+                                  <span className='absolute top-2 right-2 bg-[#197fe6] text-white text-xs font-semibold px-2 py-1 rounded'>
+                                    Nuevo
+                                  </span>
+                                )}
+                              </div>
+                              <div className='p-4'>
+                                <h3 className='text-lg font-semibold text-[#092c51] truncate'>
+                                  {product.productName}
+                                </h3>
+                                <p className='text-sm text-[#595959] line-clamp-2 mb-2'>
+                                  {product.productDescription}
+                                </p>
+                                <div className='flex justify-between items-center'>
+                                  <div className='space-y-1'>
+                                    {product.originalPrice !==
+                                      product.salePrice && (
+                                      <p className='text-sm text-[#737373] line-through'>
+                                        $
+                                        {product.originalPrice.toLocaleString()}
+                                      </p>
+                                    )}
+                                    <p className='text-lg font-bold text-[#197fe6]'>
+                                      ${product.salePrice.toLocaleString()}
+                                    </p>
+                                  </div>
+                                  <span className='text-sm text-[#595959]'>
+                                    Stock: {product.stockQuantity}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </TabsContent>
+
+                <TabsContent value='sold' className='space-y-6'>
+                  <h2 className='text-2xl font-bold text-[#092c51]'>
+                    Productos vendidos
+                  </h2>
+
+                  {!dataTransactions?.data.sellerTransactions ? (
+                    <div className='flex flex-col items-center justify-center p-8 text-[#595959]'>
+                      <p className='text-lg mb-4'>
+                        No hay transacciones disponibles
+                      </p>
+                    </div>
+                  ) : dataTransactions.data.sellerTransactions.length === 0 ? (
+                    <div className='flex flex-col items-center justify-center p-8 text-[#595959]'>
+                      <p className='text-lg mb-4'>
+                        Aún no has vendido ningún producto
+                      </p>
+                      <p>
+                        ¡Tus ventas aparecerán aquí cuando realices tu primera
+                        venta!
+                      </p>
+                    </div>
+                  ) : (
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6'>
+                      {dataTransactions.data.sellerTransactions.map(
+                        (transaction) => (
+                          <div
+                            key={transaction.id}
+                            className='bg-white rounded-lg shadow-sm border border-[#e8f2fd] hover:shadow-md transition-shadow duration-200'
+                          >
+                            <div className='relative aspect-square overflow-hidden rounded-t-lg'>
+                              <Image
+                                src={transaction.imageUrls[0]}
+                                alt={transaction.productName}
+                                width={150}
+                                height={150}
+                                className='object-cover w-full h-full'
+                              />
+                              <span
+                                className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold ${
+                                  transaction.status === 'COMPLETED'
+                                    ? 'bg-green-500 text-white'
+                                    : transaction.status === 'PENDING'
+                                      ? 'bg-yellow-500 text-white'
+                                      : 'bg-gray-500 text-white'
+                                }`}
+                              >
+                                {transaction.status}
+                              </span>
+                            </div>
+                            <div className='p-4'>
+                              <h3 className='text-lg font-semibold text-[#092c51] truncate'>
+                                {transaction.productName}
+                              </h3>
+                              <div className='mt-2 space-y-2'>
+                                <p className='text-sm text-[#595959]'>
+                                  Comprador: {transaction.userName}
+                                </p>
+                                <p className='text-sm text-[#595959]'>
+                                  Fecha:{' '}
+                                  {new Date(
+                                    transaction.transactionDate,
+                                  ).toLocaleDateString()}
+                                </p>
+                                <p className='text-sm text-[#595959]'>
+                                  Método de pago: {transaction.paymentMethod}
+                                </p>
+                                <p className='text-lg font-bold text-[#197fe6]'>
+                                  ${transaction.salePrice.toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  )}
+
+                  <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
+                    {soldProducts.map((product) => (
+                      <SoldProductCard key={product.productId} {...product} />
+                    ))}
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </section>
+          )}
+
+          <section className='bg-white rounded-lg shadow-sm border border-[#e8f2fd] p-6'>
+            <h2 className='text-2xl font-bold text-[#092c51] mb-6'>
+              Productos comprados
+            </h2>
+
+            {!dataTransactions?.data.buyerTransactions ? (
+              <div className='flex flex-col items-center justify-center p-8 text-[#595959]'>
+                <p className='text-lg mb-4'>No hay compras disponibles</p>
+              </div>
+            ) : dataTransactions.data.buyerTransactions.length === 0 ? (
+              <div className='flex flex-col items-center justify-center p-8 text-[#595959]'>
+                <p className='text-lg mb-4'>
+                  Aún no has comprado ningún producto
+                </p>
+                <p>
+                  ¡Tus compras aparecerán aquí cuando realices tu primera
+                  compra!
+                </p>
+              </div>
+            ) : (
+              <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6'>
+                {dataTransactions.data.buyerTransactions.map((transaction) => (
+                  <div
+                    key={transaction.id}
+                    className='bg-white rounded-lg shadow-sm border border-[#e8f2fd] hover:shadow-md transition-shadow duration-200'
+                  >
+                    <div className='relative aspect-square overflow-hidden rounded-t-lg'>
+                      <Image
+                        src={transaction.imageUrls[0]}
+                        alt={transaction.productName}
+                        width={150}
+                        height={150}
+                        className='object-cover w-full h-full'
+                      />
+                      <span
+                        className={`absolute top-2 right-2 px-2 py-1 rounded text-xs font-semibold ${
+                          transaction.status === 'COMPLETED'
+                            ? 'bg-green-500 text-white'
+                            : transaction.status === 'PENDING'
+                              ? 'bg-yellow-500 text-white'
+                              : 'bg-gray-500 text-white'
+                        }`}
+                      >
+                        {transaction.status}
+                      </span>
+                    </div>
+                    <div className='p-4'>
+                      <h3 className='text-lg font-semibold text-[#092c51] truncate'>
+                        {transaction.productName}
+                      </h3>
+                      <div className='mt-2 space-y-2'>
+                        <p className='text-sm text-[#595959]'>
+                          Vendedor: {transaction.userName}
+                        </p>
+                        <p className='text-sm text-[#595959]'>
+                          Fecha:{' '}
+                          {new Date(
+                            transaction.transactionDate,
+                          ).toLocaleDateString()}
+                        </p>
+                        <p className='text-sm text-[#595959]'>
+                          Método de pago: {transaction.paymentMethod}
+                        </p>
+                        <p className='text-lg font-bold text-[#197fe6]'>
+                          ${transaction.salePrice.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       </div>
     </div>
   )

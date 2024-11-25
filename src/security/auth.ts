@@ -1,4 +1,4 @@
-interface LoginCredentials {
+export interface LoginCredentials {
   usernameOrEmail: string
   password: string
 }
@@ -23,6 +23,33 @@ export const authService = {
       `${credentials.usernameOrEmail}:${credentials.password}`,
     )
     return `Basic ${base64Credentials}`
+  },
+  parseBasicAuthHeader(authHeader: string | null): LoginCredentials | null {
+    if (!authHeader || !authHeader.startsWith('Basic ')) {
+      console.error('El encabezado no es un Basic Auth válido')
+      return null
+    }
+
+    const base64Credentials = authHeader.slice(6)
+
+    try {
+      const decodedCredentials = atob(base64Credentials)
+
+      const [usernameOrEmail, password] = decodedCredentials.split(':')
+
+      if (!usernameOrEmail || !password) {
+        console.error('Credenciales mal formateadas')
+        return null
+      }
+
+      return {
+        usernameOrEmail,
+        password,
+      }
+    } catch (error) {
+      console.error('Error al decodificar las credenciales:', error)
+      return null
+    }
   },
 
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
