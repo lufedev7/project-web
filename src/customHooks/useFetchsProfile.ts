@@ -88,7 +88,8 @@ export interface UserResponseDTO {
 export default function useFetchProfile() {
   const fetchedRef = useRef(false)
   const [dataFetch, setDataFetch] = useState<DataUserType>()
-  const [dataProductUser, setDataProductUser] = useState<DataProductsUser>()
+  const [dataProductUser, setDataProductUser] =
+    useState<DataProductsUser | null>()
   const [dataTransactions, setDataTransactions] = useState<MyTransactionsType>()
   const [error, setError] = useState<string>()
   const [isLoading, setIsLoading] = useState(false)
@@ -96,6 +97,7 @@ export default function useFetchProfile() {
     message?: string
     details?: string
   }>()
+  const [isSellerError, setIsSellerError] = useState(false)
   const [test, setTest] = useState<string>()
 
   useEffect(() => {
@@ -144,12 +146,23 @@ export default function useFetchProfile() {
       const response = await fetchWithAuth(url, {
         method: 'GET',
       })
-      setDataProductUser(response)
+
+      // Nuevo manejo de error para respuestas con timeStamp
+      if (response && response.timeStamp) {
+        // Este es un objeto de error del servidor
+        console.warn('Error al obtener productos:', response.messague)
+        // No estableces un error que interrumpa la carga del perfil
+        setIsSellerError(true)
+        setDataProductUser(null)
+      } else {
+        // Respuesta exitosa
+        setDataProductUser(response)
+      }
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message)
       } else {
-        setError('Error al obtener el perfil')
+        setError('Error al obtener los productos')
       }
     } finally {
       setIsLoading(false)
@@ -348,5 +361,6 @@ export default function useFetchProfile() {
     updateUser,
     postProducts,
     test,
+    isSellerError,
   }
 }

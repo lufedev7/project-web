@@ -87,6 +87,7 @@ export default function Profile() {
     dataTransactions,
     updateUser,
     test,
+    isSellerError,
   } = useFetchProfile()
   const [userData, setUserData] = useState(initialUserData)
   const [products, setProducts] = useState(initialProducts)
@@ -134,16 +135,6 @@ export default function Profile() {
     )
   }
 
-  if (error) {
-    return (
-      <div className='flex items-center justify-center min-h-screen'>
-        <div className='bg-red-50 text-red-600 p-4 rounded-lg'>
-          Error al cargar el perfil. Por favor, intenta nuevamente.
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className='min-h-screen bg-[#f8fafc]'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8'>
@@ -159,8 +150,7 @@ export default function Profile() {
               <UserInfo {...dataFetch} onEdit={() => setIsEditingUser(true)} />
             )}
           </section>
-
-          {userData.seller && (
+          {dataFetch?.seller && (
             <section className='bg-white rounded-lg shadow-sm border border-[#e8f2fd] p-6'>
               <Tabs defaultValue='selling' className='space-y-6'>
                 <TabsList className='flex space-x-2 border-b border-[#e8f2fd] overflow-x-auto'>
@@ -214,9 +204,16 @@ export default function Profile() {
                     />
                   ) : (
                     <>
-                      {!dataProductUser ||
-                      !dataProductUser.data ||
-                      !dataProductUser.data.content ? (
+                      {isSellerError ? (
+                        <div className='flex flex-col items-center justify-center p-8 text-[#595959]'>
+                          <p className='text-lg mb-4'>No eres un vendedor</p>
+                          <p>
+                            Actualiza tu perfil para comenzar a vender productos
+                          </p>
+                        </div>
+                      ) : !dataProductUser ||
+                        !dataProductUser.data ||
+                        !dataProductUser.data.content ? (
                         <div className='flex flex-col items-center justify-center p-8 text-[#595959]'>
                           <p className='text-lg mb-4'>
                             No hay productos disponibles
@@ -236,6 +233,7 @@ export default function Profile() {
                               key={product.productId}
                               className='bg-white rounded-lg shadow-sm border border-[#e8f2fd] hover:shadow-md transition-shadow duration-200'
                             >
+                              {/* Renderizado de producto existente */}
                               <div className='relative aspect-square overflow-hidden rounded-t-lg'>
                                 <Image
                                   src={
