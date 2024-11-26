@@ -29,7 +29,7 @@ const ProductsGrid = React.memo((props: ProductsGridProps): JSX.Element => {
     <div key={productId}>
       <Link
         key={productId}
-        href={`/properties/${productId}`}
+        href={`/product/${productId}`}
         className=' shadow-ligth hover:shadow-xl rounded-2xl transition-all duration-300 cursor-pointer'
       >
         <div className='relative -z-[1]' key={productId}>

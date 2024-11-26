@@ -147,11 +147,9 @@ export default function useFetchProfile() {
         method: 'GET',
       })
 
-      // Nuevo manejo de error para respuestas con timeStamp
       if (response && response.timeStamp) {
-        // Este es un objeto de error del servidor
         console.warn('Error al obtener productos:', response.messague)
-        // No estableces un error que interrumpa la carga del perfil
+
         setIsSellerError(true)
         setDataProductUser(null)
       } else {
@@ -234,7 +232,6 @@ export default function useFetchProfile() {
     const url = process.env.NEXT_PUBLIC_URL_POST_PRODUCTS
     const urlImage = process.env.NEXT_PUBLIC_URL_POST_IMAGE
 
-    // Reset previous product error
     setProductError(undefined)
 
     if (!url) {
@@ -257,7 +254,6 @@ export default function useFetchProfile() {
         },
       })
 
-      // Check if the response indicates an error
       if (
         productResponse &&
         typeof productResponse === 'object' &&
