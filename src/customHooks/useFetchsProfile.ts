@@ -9,6 +9,11 @@ export interface DataUserType {
   userImage: string
   seller: boolean
 }
+export interface ImageType {
+  productId: number
+  url: string
+}
+
 export interface DataProductsUser {
   message: string
   data: Data
@@ -38,6 +43,16 @@ export interface Content {
   isSold: boolean
   imageUrls: string[]
   stockQuantity: number
+}
+export interface Products {
+  productName: string
+  categoryId: number
+  productDescription: string
+  userId: number | undefined
+  originalPrice: number
+  salePrice: number
+  stockQuantity: number
+  imageUrl: string
 }
 export interface MyTransactionsType {
   message: string
@@ -77,6 +92,11 @@ export default function useFetchProfile() {
   const [dataTransactions, setDataTransactions] = useState<MyTransactionsType>()
   const [error, setError] = useState<string>()
   const [isLoading, setIsLoading] = useState(false)
+  const [productError, setProductError] = useState<{
+    message?: string
+    details?: string
+  }>()
+  const [test, setTest] = useState<string>()
 
   useEffect(() => {
     if (!fetchedRef.current) {
@@ -197,13 +217,136 @@ export default function useFetchProfile() {
     }
   }
 
+  async function postProducts(DataProducts: Products) {
+    const url = process.env.NEXT_PUBLIC_URL_POST_PRODUCTS
+    const urlImage = process.env.NEXT_PUBLIC_URL_POST_IMAGE
+
+    // Reset previous product error
+    setProductError(undefined)
+
+    if (!url) {
+      setError('URL no configurada')
+      return null
+    }
+    if (!urlImage) {
+      setError('URL no configurada')
+      return null
+    }
+
+    try {
+      setIsLoading(true)
+
+      const productResponse = await fetchWithAuth(url, {
+        method: 'POST',
+        body: JSON.stringify(DataProducts),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      // Check if the response indicates an error
+      if (
+        productResponse &&
+        typeof productResponse === 'object' &&
+        'timeStamp' in productResponse
+      ) {
+        // Handle server-side validation errors
+        setProductError({
+          message: productResponse.messague || 'Error al crear el producto',
+          details: productResponse.details,
+        })
+        return null
+      }
+
+      console.log('Raw product response:', productResponse)
+
+      let productData
+      if (typeof productResponse === 'object' && productResponse !== null) {
+        if (
+          'json' in productResponse &&
+          typeof productResponse.json === 'function'
+        ) {
+          productData = await productResponse.json()
+        } else {
+          productData = productResponse
+        }
+      } else {
+        try {
+          productData = JSON.parse(productResponse.toString())
+        } catch (parseError) {
+          console.error('Failed to parse product response:', parseError)
+          throw new Error('Invalid response format')
+        }
+      }
+
+      console.log('Parsed Product Data:', productData)
+
+      const productId =
+        productData.productId ||
+        productData.data?.productId ||
+        productData.id ||
+        productData.product?.id
+
+      if (!productId) {
+        console.error('No product ID found in response:', productData)
+        throw new Error('No product ID found in response')
+      }
+
+      const imageData: ImageType = {
+        productId: productId,
+        url: DataProducts.imageUrl,
+      }
+
+      const imageResponse = await fetchWithAuth(urlImage, {
+        method: 'POST',
+        body: JSON.stringify(imageData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      let imageResponseData
+      if (
+        typeof imageResponse === 'object' &&
+        imageResponse !== null &&
+        'json' in imageResponse
+      ) {
+        imageResponseData = await imageResponse.json()
+        console.log('Image upload response:', imageResponseData)
+      } else {
+        console.log('Image response was not a JSON response:', imageResponse)
+      }
+
+      return productData
+    } catch (error) {
+      console.error('Error in postProducts:', error)
+
+      if (error instanceof Error) {
+        setProductError({
+          message: error.message,
+          details: 'Error durante la creación del producto',
+        })
+      } else {
+        setProductError({
+          message: 'Error al crear el producto',
+          details: 'Ocurrió un error inesperado',
+        })
+      }
+      return null
+    } finally {
+      setIsLoading(false)
+    }
+  }
   return {
     dataFetch,
     dataProductUser,
     dataTransactions,
     error,
+    productError,
     isLoading,
     refetch: fetchProfile,
     updateUser,
+    postProducts,
+    test,
   }
 }

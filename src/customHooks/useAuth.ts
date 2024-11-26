@@ -19,7 +19,6 @@ export const useAuth = () => {
       setIsAuthenticated(authService.isAuthenticated())
 
       const loginSuccessStored = localStorage.getItem('loginSuccess')
-      console.log('test')
 
       if (loginSuccessStored === 'true') {
         setLoginSucces(true)

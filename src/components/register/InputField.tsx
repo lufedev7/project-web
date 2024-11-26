@@ -39,7 +39,6 @@ export const InputField = ({
       required={required}
       onChange={onChange}
       accept={accept}
-      // Solo asignamos value si no es un input de tipo file
       {...(type !== 'file' ? { value: value } : {})}
       className='w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-NormalBlue focus:border-NormalBlue'
       disabled={disabled}
@@ -48,7 +47,6 @@ export const InputField = ({
   </div>
 )
 
-// Crear un componente específico para la carga de imágenes
 interface ImageUploadFieldProps {
   label: string
   id: string

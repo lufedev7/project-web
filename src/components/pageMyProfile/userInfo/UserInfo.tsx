@@ -21,13 +21,10 @@ export function UserInfo({
   return (
     <div className='bg-white rounded-lg transition-all duration-200 hover:shadow-lg p-6 md:p-8 mb-6 border border-[#e8f2fd]'>
       <div className='flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8'>
-        {/* Profile Image Container */}
         <div className='relative'>
           <div className='relative w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden ring-4 ring-[#e8f2fd] transition-all duration-200 hover:ring-[#ddecfb]'>
             <Image
-              src={
-                'https://aplication-web-storage.s3.us-east-2.amazonaws.com/1366_2000.jpg-1732422954076'
-              }
+              src={userImage || '/assets/backgroundNoImage.webp'}
               alt={`Imagen de perfil de ${userName}`}
               fill
               className='object-cover'

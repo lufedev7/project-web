@@ -86,6 +86,7 @@ export default function Profile() {
     dataProductUser,
     dataTransactions,
     updateUser,
+    test,
   } = useFetchProfile()
   const [userData, setUserData] = useState(initialUserData)
   const [products, setProducts] = useState(initialProducts)
@@ -103,7 +104,7 @@ export default function Profile() {
     console.log(dataFetch?.id)
     console.log(newUserData)
   }
-
+  console.log(test, 'Test')
   const handleAddProduct = (newProduct: {
     imageUrl: string
     productName: string
@@ -207,6 +208,7 @@ export default function Profile() {
 
                   {isAddingProduct ? (
                     <AddProductForm
+                      userIdPost={dataFetch?.id}
                       onSave={handleAddProduct}
                       onCancel={() => setIsAddingProduct(false)}
                     />
@@ -236,7 +238,10 @@ export default function Profile() {
                             >
                               <div className='relative aspect-square overflow-hidden rounded-t-lg'>
                                 <Image
-                                  src={product.imageUrls[0]}
+                                  src={
+                                    product.imageUrls[0] ||
+                                    '/assets/backgroundNoImage.webp'
+                                  }
                                   alt={product.productName}
                                   width={150}
                                   height={150}
@@ -312,7 +317,10 @@ export default function Profile() {
                           >
                             <div className='relative aspect-square overflow-hidden rounded-t-lg'>
                               <Image
-                                src={transaction.imageUrls[0]}
+                                src={
+                                  transaction.imageUrls[0] ||
+                                  '/assets/backgroundNoImage.webp'
+                                }
                                 alt={transaction.productName}
                                 width={150}
                                 height={150}
@@ -396,7 +404,10 @@ export default function Profile() {
                   >
                     <div className='relative aspect-square overflow-hidden rounded-t-lg'>
                       <Image
-                        src={transaction.imageUrls[0]}
+                        src={
+                          transaction.imageUrls[0] ||
+                          '/assets/backgroundNoImage.webp'
+                        }
                         alt={transaction.productName}
                         width={150}
                         height={150}
